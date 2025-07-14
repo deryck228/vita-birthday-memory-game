@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>老趙生日快樂！</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    body {
+      background: #f2f2f2;
+      font-family: 'Noto Sans TC', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 480px;
+      margin: 40px auto 0 auto;
+      padding: 10px;
+    }
+    h1 {
+      text-align: center;
+      color: #c77d0a;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #bbb6;
+      aspect-ratio: 3/4;
+      position: relative;
+      cursor: pointer;
+      perspective: 800px;
+    }
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+    .flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-front {
+      background: #eed382;
+      color: #9e6900;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .card-back img {
+      width: auto;
+      height: 96%;
+      max-width: 96%;
+      max-height: 96%;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+    }
+    /* 完成彈窗與祝福卡片 */
+    #finish-time-modal, #final-message {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 99;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.85);
+      overflow: auto;
+    }
+    #finish-time-modal .modal-inner {
+      background: #fffbe6;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px #0003;
+      padding: 30px 28px;
+      text-align: center;
+      max-width: 90vw;
+      animation: fadein 0.6s;
+    }
+    #finish-time-msg {
+      font-size: 1.4em;
+      margin-bottom: 16px;
+      color: #c77d0a;
+    }
+    #final-message .card {
+      max-width: 370px;
+      margin: 0 auto;
+      background: #fffbe6;
+      color: #715800;
+      padding: 32px 20px 18px 20px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px #0003;
+      text-align: center;
+      font-size: 1.1em;
+      line-height: 1.7;
+      animation: fadein 1s;
+      position: relative;
+    }
+    #final-message h2 {
+      margin-bottom: 14px;
+      color: #c77d0a;
+    }
+    .final-btns {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 30px 0 0 0;
+    }
+    .final-btns button {
+      padding: 8px 24px;
+      background: #f1b53a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .final-btns button:last-child {
+      background: #c77d0a;
+    }
+    .final-btns button:hover {
+      filter: brightness(1.1);
+    }
+    /* 新增：大圖瀏覽 */
+    .all-photos {
+      margin-top: 20px;
+      display: none;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      animation: fadein 0.7s;
+    }
+    .all-photos img {
+      width: 110px;
+      max-width: 44vw;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #bbb6;
+      cursor: pointer;
+      transition: transform 0.2s;
+      object-fit: contain;
+    }
+    .all-photos img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 24px #c77d0a66;
+    }
+    /* 點大圖時全螢幕顯示 */
+    #photo-viewer {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.96);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    #photo-viewer img {
+      max-width: 95vw;
+      max-height: 95vh;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px #000c;
+      background: #fff;
+    }
+    #photo-viewer:active, #photo-viewer:after {
+      cursor: zoom-out;
+    }
+    @keyframes fadein {
+      from { opacity: 0;}
+      to { opacity: 1;}
+    }
+    @media (max-width: 520px) {
+      .container { max-width: 99vw; padding: 2vw;}
+      .grid { gap: 2vw;}
+      #final-message .card { padding: 18px 3vw 8px 3vw;}
+      .all-photos img { width: 96px; }
+      #final-message .card { font-size:1em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>老趙生日快樂！</h1>
+    <div class="grid" id="grid"></div>
+  </div>
+  <!-- 完成遊戲計時彈窗 -->
+  <div id="finish-time-modal">
+    <div class="modal-inner">
+      <div id="finish-time-msg"></div>
+      <button onclick="showFinalMessage()">繼續</button>
+    </div>
+  </div>
+  <!-- 祝福卡片+按鈕+看大圖 -->
+  <div id="final-message">
+    <div class="card">
+      <h2>老趙生日快樂！！</h2>
+      <div style="text-align:left; margin-top:12px; font-size:1.08em;">
+        老趙謝謝你一直以來都是個很稱職的好朋友，我比較孤僻，其實也沒有很常主動關心別人，不過久而久之也受你影響，開始會關心別人；<br><br>
+        而直到我回國開始照顧皮皮時，你也時不時關心我和皮皮，也只有你幫皮皮剪影片(連我自己都沒有剪)，真的很感動，我想皮皮在天上一定繼續調皮著，也會惦記著我們。<br><br>
+        希望你在澳洲可以繼續過著很舒適的生活，我相信每個階段雖然有不同的困擾，但一切都會好好的。<br><br>
+        <em style="float:right;">friends forever...</em>
+      </div>
+      <div class="final-btns">
+        <button onclick="location.reload()">再玩一次</button>
+        <button onclick="showPhotos()">看照片</button>
+      </div>
+      <div class="all-photos" id="all-photos"></div>
+    </div>
+  </div>
+  <!-- 大圖全螢幕檢視 -->
+  <div id="photo-viewer" onclick="this.style.display='none'">
+    <img id="viewer-img" src="">
+  </div>
+<script>
+  // 記錄開始時間
+  const startTime = Date.now();
+
+  // 1~8 兩份共16張卡
+  const cards = [];
+  for(let i=1; i<=8; i++) {
+    cards.push(i, i); // 兩份
+  }
+  // 洗牌
+  for(let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  const grid = document.getElementById('grid');
+  let flipped = [];
+  let matched = 0;
+  let gameSeconds = 0; // 新增計時變數
+
+  // 建立卡片
+  cards.forEach((num, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">?</div>
+        <div class="card-back"><img src="${num}.jpg" alt="memory"></div>
+      </div>
+    `;
+    card.addEventListener('click', function() {
+      if(card.classList.contains('flipped') || flipped.length === 2) return;
+      card.classList.add('flipped');
+      flipped.push({card, num});
+      if(flipped.length === 2) {
+        if(flipped[0].num === flipped[1].num) {
+          matched += 2;
+          flipped = [];
+          if(matched === cards.length) {
+            setTimeout(showTimeModal, 800);
+          }
+        } else {
+          setTimeout(()=> {
+            flipped[0].card.classList.remove('flipped');
+            flipped[1].card.classList.remove('flipped');
+            flipped = [];
+          }, 900);
+        }
+      }
+    });
+    grid.appendChild(card);
+  });
+
+  // 第一階段：完成彈窗，顯示分秒
+  function showTimeModal() {
+    gameSeconds = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(gameSeconds / 60);
+    const s = gameSeconds % 60;
+    let timeStr = m > 0 ? `${m} 分 ${s} 秒` : `${s} 秒`;
+    document.getElementById('finish-time-msg').innerHTML = `你花了 <b>${timeStr}</b> 完成遊戲！，是不是老了🤣`;
+    document.getElementById('finish-time-modal').style.display = 'flex';
+  }
+
+  // 第二階段：祝福卡片
+  function showFinalMessage() {
+    document.getElementById('finish-time-modal').style.display = 'none';
+    document.getElementById('final-message').style.display = 'flex';
+    // 每次進來都先關掉大圖區
+    document.getElementById('all-photos').style.display = 'none';
+  }
+
+  // 第三階段：顯示所有大圖
+  function showPhotos() {
+    const allPhotos = document.getElementById('all-photos');
+    allPhotos.innerHTML = '';
+    for(let i=1; i<=8; i++) {
+      const img = document.createElement('img');
+      img.src = `${i}.jpg`;
+      img.alt = `照片${i}`;
+      img.title = '點擊放大';
+      img.onclick = () => showPhoto(i);
+      allPhotos.appendChild(img);
+    }
+    allPhotos.style.display = 'flex';
+    // 滾動到大圖區
+    setTimeout(()=> {
+      allPhotos.scrollIntoView({behavior: 'smooth'});
+    }, 100);
+  }
+
+  // 點圖放大
+  function showPhoto(i) {
+    const viewer = document.getElementById('photo-viewer');
+    document.getElementById('viewer-img').src = `${i}.jpg`;
+    viewer.style.display = 'flex';
+  }
+</script>
+</body>
+</html>
